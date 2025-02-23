@@ -44,27 +44,30 @@ fn main(in: FragmentInput) -> @location(0) vec4f
 
     let viewPos = cameraUniforms.viewMat * vec4(in.pos, 1.0);
     let depth = -viewPos.z;
+
     let near = cameraUniforms.nearPlane;
     let far = cameraUniforms.farPlane;
     let logRatio = log(far / near);
     
     let depthClamped = clamp(depth, near, far);
-    var z:u32 = u32(floor(log((depthClamped / near) / logRatio) * f32(${clusterCountZ})));
+    var z:u32 = u32(floor(log(depthClamped / near) / logRatio * f32(${clusterCountZ})));
 
     let clusterIdX = clamp(x, 0u, ${clusterCountX} - 1u);
     let clusterIdY = clamp(y, 0u, ${clusterCountY} - 1u);
     let clusterIdZ = clamp(z, 0u, ${clusterCountZ} - 1u);
     let clusterIdx = clusterIdX + 
     clusterIdY * ${clusterCountX}u + clusterIdZ * ${clusterCountX}u * ${clusterCountY}u;
+
     let clusterOffset = clusterIdx * (${maxLightsPerCluster}u + 1u);
     let numLights = clusterLights[clusterOffset];
-    var finalColor = vec3<f32>(0.0, 0.0, 0.0);
+    var totalLightContrib = vec3<f32>(0.0, 0.0, 0.0);
 
     for(var i = 0u; i < numLights; i = i + 1u) {
         let lightIdx = clusterLights[clusterOffset + i + 1u];
         let light = lightSet.lights[lightIdx];
-        finalColor = finalColor + calculateLightContrib(light, in.pos, in.nor);
+        totalLightContrib = totalLightContrib + calculateLightContrib(light, in.pos, normalize(in.nor));
     }
-    finalColor = finalColor * diffuseColor.rgb;
+
+    var finalColor = totalLightContrib * diffuseColor.rgb;
     return vec4(finalColor, 1);
 }
