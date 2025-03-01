@@ -15,7 +15,7 @@ WebGL Forward+ and Clustered Deferred Shading
 
 ### Demo Video/GIF
 
-![](https://github.com/butteruni/Project4-WebGPU-Forward-Plus-and-Clustered-Deferred/blob/main/img/example.mp4)
+![](https://github.com/butteruni/Project4-WebGPU-Forward-Plus-and-Clustered-Deferred/blob/main/img/example.gif?raw=true)
 
 
 
